@@ -9,6 +9,7 @@ public class ScanAbility : MonoBehaviour
     public float maxRadius = 10f; // Maximum radius for the scan effect
     public float scanSpeed = 5f; // How quickly the scan expands
     public AudioClip hitSound; // Sound to play when the scan hits an entity
+    public AudioClip startSound;
 
     private float currentRadius = 0f; // Current radius of the scan
     private bool isScanning = false; // Whether the scan is active
@@ -29,13 +30,14 @@ public class ScanAbility : MonoBehaviour
             UpdateMaterial(); // Update shader with current radius
 
             // Check for entities hit by the scan
-            DetectEntitiesInRange();
+            //DetectEntitiesInRange();
 
             // Stop scanning if the max radius is reached
             if (currentRadius >= maxRadius)
             {
                 isScanning = false;
                 currentRadius = 0f; // Reset radius for the next scan
+                material.SetFloat("_Radius", currentRadius); // Set the radius
             }
         }
 
@@ -48,24 +50,17 @@ public class ScanAbility : MonoBehaviour
 
     void StartScan()
     {
+        audioSource.PlayOneShot(startSound);
         currentRadius = 0f; // Reset radius at the start
         isScanning = true; // Start the scanning process
+        material.SetVector("_Position", transform.position); // Set scan position to player position
         UpdateMaterial(); // Update shader with initial radius
     }
 
     void UpdateMaterial()
     {
-        if(isScanning)
-        {
             material.SetFloat("_Radius", currentRadius); // Set the radius
-        }
-        else
-        {
-            material.SetFloat("_Radius", currentRadius); // Set the radius
-            material.SetVector("_Position", transform.position); // Set scan position to player position
-        }
-        
-        
+                    
     }
 
     void DetectEntitiesInRange()
